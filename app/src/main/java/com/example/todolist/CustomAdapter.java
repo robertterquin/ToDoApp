@@ -100,7 +100,6 @@ public class CustomAdapter extends ArrayAdapter<Item> {
                 })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error updating task", e));
     }
-
     // Sort priority tasks while keeping others in place
     private void sortPriorityTasks() {
         ArrayList<Item> priorityTasks = new ArrayList<>();
