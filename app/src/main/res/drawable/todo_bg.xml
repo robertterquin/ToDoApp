@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Slightly Tinted Background to Match Theme -->
+    <solid android:color="#F0F5FA"/> <!-- Soft Blueish White -->
+
+    <!-- Rounded Corners -->
+    <corners android:radius="14dp"/>
+
+    <!-- Subtle Stroke for Definition -->
+    <stroke android:width="2dp" android:color="#90A4AE"/> <!-- Light Gray-Blue Stroke -->
+
+    <!-- Soft Shadow Effect -->
+    <padding android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp"/>
+</shape>
