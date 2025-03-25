@@ -64,7 +64,6 @@ public class Item {
 
     public void setFavorite(boolean favorite) {
         this.isFavorite = favorite;
-        this.isPriority = favorite; // Update priority when favorite status changes
     }
 
     public void setPriority(int priority) {
