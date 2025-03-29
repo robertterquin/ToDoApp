@@ -14,7 +14,7 @@
             android:layout_marginTop="180dp"
             android:layout_width="330dp"
             android:layout_height="0dp"
-            android:padding="20dp"
+            android:padding="10dp"
             android:dividerHeight="20dp"
             android:divider="@android:color/transparent"
             app:layout_constraintTop_toTopOf="parent"
@@ -23,20 +23,33 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toTopOf="@id/add_btn" />
 
-        <ImageView
-            android:id="@+id/add_btn"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:src="@drawable/add_btn"
-            android:contentDescription="Add Task"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="10dp"
-            android:dividerHeight="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_margin="20dp"/>
+    <ImageView
+        android:id="@+id/write_btn"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/wirte"
+        android:contentDescription="Write Task"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="20dp"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/add_btn"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/add_btn"
+        android:contentDescription="Add Task"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="20dp"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 

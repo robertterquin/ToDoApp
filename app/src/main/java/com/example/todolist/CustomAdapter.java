@@ -75,21 +75,15 @@ public class CustomAdapter extends ArrayAdapter<Item> {
     private void updateTaskInFirestore(Item item) {
         if (item.getId() == null || item.getId().isEmpty()) return;
 
-        // Preserve order by keeping timestamps
+        // 🔥 Keep timestamp unchanged by only updating checked/favorite fields
         Map<String, Object> updates = new HashMap<>();
         updates.put("checked", item.isChecked());
         updates.put("favorite", item.isFavorite());
-        updates.put("title", item.getTitle());
-        updates.put("description", item.getDescription());
-        updates.put("timestamp", System.currentTimeMillis());
 
-        // 🔥 Update Firestore
+        // ✅ Only update necessary fields, keeping timestamp unchanged
         db.collection("tasks").document(item.getId())
                 .update(updates)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("Firestore", "Task updated successfully");
-                    fetchTasksFromFirestore();  // 🔥 Re-fetch updated data
-                })
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Task updated successfully"))
                 .addOnFailureListener(e -> Log.e("Firestore", "Error updating task", e));
     }
 

@@ -1,5 +1,6 @@
 package com.example.todolist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
@@ -21,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Item> todoList;
     private ListView lvTasks;
     private CustomAdapter myAdapter;
+
+    private ImageView write_btn;
+
     private ImageView imgAddTask;
     private FirebaseFirestore db;
     private CollectionReference tasksRef;
@@ -38,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize UI components
         lvTasks = findViewById(R.id.lvTasks);
+        write_btn = findViewById(R.id.write_btn);
         imgAddTask = findViewById(R.id.add_btn);
         todoList = new ArrayList<>();
         myAdapter = new CustomAdapter(MainActivity.this, todoList);
@@ -52,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Click listener for add button
         imgAddTask.setOnClickListener(v -> showAddTaskDialog());
+
+        write_btn.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, notes.class);
+            startActivity(intent);
+        });
+
     }
 
     private void showAddTaskDialog() {
