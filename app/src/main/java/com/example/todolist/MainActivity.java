@@ -3,6 +3,9 @@ package com.example.todolist;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
+import android.animation.ObjectAnimator;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -121,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     int position = lvTasks.pointToPosition((int) e1.getX(), (int) e1.getY());
 
                     if (position != ListView.INVALID_POSITION && position < todoList.size()) {
-                        showDeleteConfirmation(position);
+                        animateAndDeleteTask(position);
                     }
                     return true;
                 }
@@ -130,38 +133,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Show confirmation dialog before deleting a task
-    private void showDeleteConfirmation(int position) {
+    // Animate and delete task
+    private void animateAndDeleteTask(int position) {
         if (position < 0 || position >= todoList.size()) return;
 
-        Item itemToDelete = todoList.get(position);
-
-        // Inflate custom dialog layout
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_delete_task, null);
-
-        // Use IDs from your XML layout
-        TextView tvTaskName = dialogView.findViewById(R.id.tvTaskName);  // Task title
-        Button btnCancel = dialogView.findViewById(R.id.btnCancel);      // Cancel button
-        Button btnDelete = dialogView.findViewById(R.id.btnDelete);      // Delete button
-
-        // Set task name dynamically
-        tvTaskName.setText("Task: " + itemToDelete.getTitle());
-
-        // Create and show dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(dialogView);
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        // Button click listeners
-        btnCancel.setOnClickListener(v -> dialog.dismiss());
-        btnDelete.setOnClickListener(v -> {
+        View taskView = lvTasks.getChildAt(position - lvTasks.getFirstVisiblePosition());
+        if (taskView != null) {
+            ObjectAnimator animator = ObjectAnimator.ofFloat(taskView, "translationX", 0, -taskView.getWidth());
+            animator.setDuration(300);
+            animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    deleteTask(position);
+                }
+            });
+            animator.start();
+        } else {
             deleteTask(position);
-            dialog.dismiss();
-        });
+        }
     }
-
-
 
     // Delete task from Firestore and update UI
     private void deleteTask(int position) {

@@ -44,18 +44,15 @@ public class CustomAdapter extends ArrayAdapter<Item> {
             return convertView;
         }
 
-        // Set task data
         tvTitle.setText(currentItem.getTitle());
         tvDescription.setText(currentItem.getDescription());
 
-        // Remove previous listener before updating check state
         checkBox.setOnCheckedChangeListener(null);
         checkBox.setChecked(currentItem.isChecked());
 
-        // Apply strikethrough if checked
         applyStrikeThrough(tvTitle, tvDescription, currentItem.isChecked());
 
-        // ✅ Checkbox updates Firestore and triggers sorting
+        // ✅ Checkbox updates Firestore
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             currentItem.setChecked(isChecked);
             applyStrikeThrough(tvTitle, tvDescription, isChecked);
@@ -69,18 +66,12 @@ public class CustomAdapter extends ArrayAdapter<Item> {
         favButton.setOnClickListener(v -> {
             boolean isFavorite = !currentItem.isFavorite();
             currentItem.setFavorite(isFavorite);
-            currentItem.setPriority(isFavorite ? 1 : 0);
             updateTaskInFirestore(currentItem);
         });
 
         return convertView;
     }
 
-
-
-    // ✅ Add a new task (priority items will be placed correctly after sorting)
-
-    // ✅ Updates Firestore (does not save position anymore)
     private void updateTaskInFirestore(Item item) {
         if (item.getId() == null || item.getId().isEmpty()) return;
 
@@ -88,32 +79,22 @@ public class CustomAdapter extends ArrayAdapter<Item> {
         Map<String, Object> updates = new HashMap<>();
         updates.put("checked", item.isChecked());
         updates.put("favorite", item.isFavorite());
-        updates.put("priority", item.getPriority());
         updates.put("title", item.getTitle());
         updates.put("description", item.getDescription());
+        updates.put("timestamp", System.currentTimeMillis());
 
-        // 🔥 If task is completed, keep timestamp but push to bottom
-        if (item.isChecked()) {
-            updates.put("timestamp", System.currentTimeMillis() + 9999999);
-        } else {
-            updates.put("timestamp", System.currentTimeMillis());
-        }
-
-        // 🔥 Update Firestore and refresh the sorted list
+        // 🔥 Update Firestore
         db.collection("tasks").document(item.getId())
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "Task updated successfully");
-                    fetchTasksFromFirestore();  // 🔥 Re-fetch sorted data
-                    sortTasks();  // 🔥 Ensure tasks move dynamically in UI
+                    fetchTasksFromFirestore();  // 🔥 Re-fetch updated data
                 })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error updating task", e));
     }
 
     private void fetchTasksFromFirestore() {
         db.collection("tasks")
-                .orderBy("priority", Query.Direction.DESCENDING)  // 🔥 Priority tasks on top
-                .orderBy("checked", Query.Direction.ASCENDING)   // 🔥 Completed tasks at the bottom
                 .orderBy("timestamp", Query.Direction.ASCENDING) // 🔥 Keep order persistent
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -127,38 +108,6 @@ public class CustomAdapter extends ArrayAdapter<Item> {
                 .addOnFailureListener(e -> Log.e("Firestore", "Error fetching tasks", e));
     }
 
-    // ✅ Sorts tasks based on priority & completion status
-    // ✅ Ensures sorted order (priority → normal → completed)
-    // ✅ Ensures sorted order (priority → normal → completed)
-    private void sortTasks() {
-        ArrayList<Item> priorityTasks = new ArrayList<>();
-        ArrayList<Item> normalTasks = new ArrayList<>();
-        ArrayList<Item> completedTasks = new ArrayList<>();
-
-        for (Item task : taskList) {
-            if (task.isChecked()) {
-                completedTasks.add(task);  // ✅ Move completed tasks to the bottom
-            } else if (task.getPriority() == 1) {
-                priorityTasks.add(task);   // ✅ Move priority tasks to the top
-            } else {
-                normalTasks.add(task);     // ✅ Keep normal tasks in the middle
-            }
-        }
-
-        // 🔥 Update task list dynamically
-        taskList.clear();
-        taskList.addAll(priorityTasks);
-        taskList.addAll(normalTasks);
-        taskList.addAll(completedTasks);
-
-        notifyDataSetChanged(); // ✅ Refresh UI immediately
-    }
-
-
-
-
-
-    // Apply or remove strikethrough
     private void applyStrikeThrough(TextView title, TextView description, boolean isChecked) {
         if (isChecked) {
             title.setPaintFlags(title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -168,4 +117,4 @@ public class CustomAdapter extends ArrayAdapter<Item> {
             description.setPaintFlags(description.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
     }
-} 
+}
